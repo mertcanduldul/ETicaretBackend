@@ -2,6 +2,7 @@
 using Data.Dapper.Repository.Identity;
 using Data.Entity.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 namespace Identity.Api.Controllers
 {
@@ -27,19 +28,21 @@ namespace Identity.Api.Controllers
         [Route("Registration")]
         public RegistrationResponse Registration(RegistrationRequest request)
         {
-            var response = new RegistrationResponse();
-            var identityRepository = new IdentityRepository();
-            KU_KULLANICI existUser = identityRepository.HaveAccountWithThatEmail(request.E_MAIL);
-
-            if (existUser.ID_KULLANICI > 0)
-            {
-                response.IsSuccess = false;
-                response.Message = "E-Mail Adresi kullanılıyor. Üyelik Başarısız !";
-                return response;
-            }
-
             try
             {
+                RegistrationResponse response = new RegistrationResponse();
+                IdentityRepository identityRepository = new IdentityRepository();
+                KU_KULLANICI existUser = new KU_KULLANICI();
+                existUser = identityRepository.HaveAccountWithThatEmail(request.E_MAIL);
+
+                if (existUser.ID_KULLANICI > 0)
+                {
+                    response.IsSuccess = false;
+                    response.Message = "E-Mail Adresi kullanılıyor. Üyelik Başarısız !";
+                    return response;
+                }
+
+
                 KU_KULLANICI kullanici = new KU_KULLANICI();
                 kullanici.AD_SOYAD = request.AD_SOYAD;
                 kullanici.E_MAIL = request.E_MAIL;
@@ -59,14 +62,14 @@ namespace Identity.Api.Controllers
                     response.IsSuccess = false;
                     response.Message = "Üyelik Başarısız !";
                 }
+
+                return response;
             }
-            catch (Exception e)
+            catch (SystemException e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-            
-            return response;
         }
     }
 }

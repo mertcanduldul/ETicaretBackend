@@ -21,7 +21,6 @@ namespace Dapper.Repository.Base
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(ConfigReader.GetConnectionStringsValue("DbConnectionString"));
             var DbPassword = ConfigReader.GetConnectionStringsValue("DbPassword");
-            //db şifreleme algoritması kullanılabilir.
             builder.Password = DbPassword;
             _connectionString = builder.ConnectionString;
         }

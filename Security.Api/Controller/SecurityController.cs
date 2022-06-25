@@ -25,7 +25,7 @@ namespace Security.Api.Controller
         }
 
         [Route("EncryptionData")]
-        [HttpGet]
+        [HttpPost]
         public SecurityResponse EncryptionData(SecurityRequest request)
         {
             SecurityResponse securityResponse = new SecurityResponse();
@@ -60,7 +60,7 @@ namespace Security.Api.Controller
 
 
         [Route("DecryptionData")]
-        [HttpGet]
+        [HttpPost]
         public SecurityResponse DecryptionData(SecurityRequest request)
         {
             SecurityResponse securityResponse = new SecurityResponse();

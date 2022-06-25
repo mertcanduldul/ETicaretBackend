@@ -26,6 +26,12 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
     };
 });
 
+builder.Services.AddControllers() //Disable CamelCase
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+});
+
 BadRequestObjectResult CustomErrorResponse(ActionContext context)
 {
     return new BadRequestObjectResult(context.ModelState

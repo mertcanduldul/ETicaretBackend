@@ -13,6 +13,7 @@
     <None Remove="Microsoft.Data.SqlClient" />
     <None Remove="Microsoft.Extensions.Configuration" />
     <None Remove="Microsoft.Extensions.Configuration.Json" />
+    <None Remove="Dapper" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Repository\" />
@@ -23,5 +24,10 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Dapper" Version="2.0.123" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ServiceModel\Business.ServiceModel.csproj" />
+    <ProjectReference Include="..\Data.Entity\Data.Entity.csproj" />
   </ItemGroup>
 </Project>

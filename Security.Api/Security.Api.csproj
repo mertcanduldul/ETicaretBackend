@@ -16,10 +16,8 @@
     <Folder Include="Controller\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Data\Data.Dapper\Data.Dapper.csproj" />
     <ProjectReference Include="..\ServiceModel\Business.ServiceModel.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-    </ProjectReference>
-    <ProjectReference Include="..\Data.Dapper\Data.Dapper.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using Business.ServiceModel.Security;
 using System.Security.Cryptography;
@@ -10,7 +9,7 @@ namespace Security.Api.Controller
     [Route("api/[controller]")]
     public class SecurityController : ControllerBase
     {
-        public static readonly string SECRET_KEY = "b14ca5898a4e4133bbce2ea2315a1916";
+        private static readonly string SECRET_KEY = "b14ca5898a4e4133bbce2ea2315a1916";
 
         private readonly ILogger<SecurityController> _logger;
 
@@ -40,16 +39,19 @@ namespace Security.Api.Controller
                 ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+                    using (CryptoStream cryptoStream =
+                           new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
                     {
                         using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
                         {
                             streamWriter.Write(request.Key);
                         }
+
                         array = memoryStream.ToArray();
                     }
                 }
             }
+
             securityResponse.EncryptPass = Convert.ToBase64String(array);
             securityResponse.IsSuccess = true;
             securityResponse.Message = "Encryption Başarılı ";
@@ -67,20 +69,21 @@ namespace Security.Api.Controller
             {
                 byte[] iv = new byte[16];
                 byte[] buffer = Convert.FromBase64String(request.Key);
-                using (Aes aes = Aes.Create())
+                using(Aes aes = Aes.Create())
                 {
                     aes.Key = Encoding.UTF8.GetBytes(SECRET_KEY);
                     aes.IV = iv;
-                    ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                    ICryptoTransform decrypt = aes.CreateDecryptor(aes.Key, aes.IV);
                     using (MemoryStream memoryStream = new MemoryStream(buffer))
                     {
-                        using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+                        using (CryptoStream cryptoStream =
+                               new CryptoStream((Stream)memoryStream, decrypt, CryptoStreamMode.Read))
                         {
                             using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
                             {
                                 securityResponse.DecryptPass = streamReader.ReadToEnd();
                                 securityResponse.IsSuccess = true;
-                                securityResponse.Message = "Decryption Başarılı ";
+                                securityResponse.Message = "Decryption Basarılı ";
                                 return securityResponse;
                             }
                         }
@@ -97,4 +100,3 @@ namespace Security.Api.Controller
         }
     }
 }
-

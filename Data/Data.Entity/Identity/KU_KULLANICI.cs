@@ -14,8 +14,6 @@ namespace Data.Entity.Identity
 
         public string SIFRE { get; set; }
 
-        public bool ACCOUNT_VERIFIED { get; set; }
-
         public DateTime? CREDATE { get; set; }
 
         public bool DELETED { get; set; }

@@ -1,5 +1,6 @@
-﻿using System;
-using Business.ServiceModel.Identity;
+﻿using Business.ServiceModel.Identity;
+using Data.Dapper.Repository.Identity;
+using Data.Entity.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.Api.Controllers
@@ -27,8 +28,45 @@ namespace Identity.Api.Controllers
         public RegistrationResponse Registration(RegistrationRequest request)
         {
             var response = new RegistrationResponse();
+            var identityRepository = new IdentityRepository();
+            KU_KULLANICI existUser = identityRepository.HaveAccountWithThatEmail(request.E_MAIL);
 
+            if (existUser.ID_KULLANICI > 0)
+            {
+                response.IsSuccess = false;
+                response.Message = "E-Mail Adresi kullanılıyor. Üyelik Başarısız !";
+                return response;
+            }
+
+            try
+            {
+                KU_KULLANICI kullanici = new KU_KULLANICI();
+                kullanici.AD_SOYAD = request.AD_SOYAD;
+                kullanici.E_MAIL = request.E_MAIL;
+                kullanici.SIFRE = request.SIFRE;
+                kullanici.CREDATE = DateTime.Now;
+                identityRepository.Add(kullanici);
+
+                if (kullanici.ID_KULLANICI != 0)
+                {
+                    response.E_MAIL = kullanici.E_MAIL;
+                    response.AD_SOYAD = kullanici.AD_SOYAD;
+                    response.IsSuccess = true;
+                    response.Message = "Üyelik Başarılı !";
+                }
+                else
+                {
+                    response.IsSuccess = false;
+                    response.Message = "Üyelik Başarısız !";
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
+            return response;
         }
     }
 }
-

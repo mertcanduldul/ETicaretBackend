@@ -5,11 +5,11 @@ namespace ServiceModel.Identity
 {
     public class LoginRequest
     {
-        [Required(ErrorMessage = "UserName is required !")]
-        public string UserName { get; set; }
+        [Required(ErrorMessage = "Email zorunlu alandır !")]
+        public string E_MAIL { get; set; }
 
-        [Required(ErrorMessage = "Password is required !")]
-        public string Password { get; set; }
+        [Required(ErrorMessage = "Sifre zorunlu alandır !")]
+        public string SIFRE { get; set; }
     }
 }
 

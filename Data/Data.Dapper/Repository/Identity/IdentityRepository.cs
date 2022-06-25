@@ -1,17 +1,17 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
+﻿using System.Data;
+using Dapper;
 using Dapper.Repository.Base;
 using Data.Entity.Identity;
-using Microsoft.Data.SqlClient;
 
-namespace Dapper.Repository.Identity
+
+namespace Data.Dapper.Repository.Identity
 {
-    public class LoginRepository : BaseRepository, IDataRepository<KU_KULLANICI>
+    public class IdentityRepository : BaseRepository, IDataRepository<KU_KULLANICI>
     {
         public void Add(KU_KULLANICI entity)
         {
-            string query = "INSERT INTO dbo.KK_KULLANICI (AD_SOYAD,E_MAIL,SIFRE,CREDATE) VALUES(@AD_SOYAD,@E_MAIL,@SIFRE,@CREDATE)";
+            string query =
+                "INSERT INTO dbo.KU_KULLANICI (AD_SOYAD,E_MAIL,SIFRE,CREDATE) VALUES(@AD_SOYAD,@E_MAIL,@SIFRE,@CREDATE)";
 
             var lastId = _connection.ExecuteScalar<int>(query, entity);
             entity.ID_KULLANICI = lastId;
@@ -41,11 +41,21 @@ namespace Dapper.Repository.Identity
         {
             using (IDbConnection dbConnection = _connection)
             {
-                string query = @"SELECT * FROM KK_KULLANICI (NOLOCK) WHERE E_MAIL=@e_mail AND DELETED=0";
+                string query = @"SELECT * FROM KU_KULLANICI (NOLOCK) WHERE E_MAIL=@e_mail AND DELETED=0";
 
                 return dbConnection.QueryFirstOrDefault<KU_KULLANICI>(query, new { @email = e_mail });
             }
         }
+
+        public KU_KULLANICI UserLogin(string e_mail, string sifre)
+        {
+            using (IDbConnection dbConnection = _connection)
+            {
+                string query =
+                    "SELECT * FROM KU_KULLANICI (NOLOCK) WHERE E_MAIL=@e_mail AND SIFRE=@sifre AND DELETED=0";
+
+                return dbConnection.QueryFirstOrDefault<KU_KULLANICI>(query, new { @e_mail = e_mail, @sifre = sifre });
+            }
+        }
     }
 }
-

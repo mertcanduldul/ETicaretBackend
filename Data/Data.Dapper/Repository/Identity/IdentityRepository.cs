@@ -11,7 +11,7 @@ namespace Data.Dapper.Repository.Identity
         public void Add(KU_KULLANICI entity)
         {
             string query =
-                "INSERT INTO dbo.KU_KULLANICI (AD_SOYAD,E_MAIL,SIFRE,CREDATE,IS_ACTIVE) VALUES(@AD_SOYAD,@E_MAIL,@SIFRE,@CREDATE,TRUE); SELECT SCOPE_IDENTITY()";
+                "INSERT INTO dbo.KU_KULLANICI (AD_SOYAD,E_MAIL,SIFRE,CREDATE) VALUES(@AD_SOYAD,@E_MAIL,@SIFRE,@CREDATE); SELECT SCOPE_IDENTITY()";
 
             var lastId = _connection.ExecuteScalar(query, entity);
             entity.ID_KULLANICI = Convert.ToInt32(lastId);

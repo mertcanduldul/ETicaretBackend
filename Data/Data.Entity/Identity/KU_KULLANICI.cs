@@ -16,6 +16,9 @@ namespace Data.Entity.Identity
         public DateTime? CREDATE { get; set; }
 
         public bool DELETED { get; set; }
+
+        public bool IS_ACTIVE { get; set; }
+
+        public int LOGIN_SAYISI { get; set; }
     }
 }
-

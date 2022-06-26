@@ -11,7 +11,7 @@ namespace Data.Dapper.Repository.Identity
         public void Add(KU_KULLANICI entity)
         {
             string query =
-                "INSERT INTO dbo.KU_KULLANICI (AD_SOYAD,E_MAIL,SIFRE,CREDATE) VALUES(@AD_SOYAD,@E_MAIL,@SIFRE,@CREDATE); SELECT SCOPE_IDENTITY()";
+                "INSERT INTO dbo.KU_KULLANICI (AD_SOYAD,E_MAIL,SIFRE,CREDATE,IS_ACTIVE) VALUES(@AD_SOYAD,@E_MAIL,@SIFRE,@CREDATE,TRUE); SELECT SCOPE_IDENTITY()";
 
             var lastId = _connection.ExecuteScalar(query, entity);
             entity.ID_KULLANICI = Convert.ToInt32(lastId);
@@ -55,6 +55,39 @@ namespace Data.Dapper.Repository.Identity
                     "SELECT * FROM KU_KULLANICI (NOLOCK) WHERE E_MAIL=@e_mail AND SIFRE=@sifre AND DELETED=0";
 
                 return dbConnection.QueryFirstOrDefault<KU_KULLANICI>(query, new { @e_mail = e_mail, @sifre = sifre });
+            }
+        }
+
+        public KU_KULLANICI UserLoginWithoutPassword(string e_mail)
+        {
+            using (IDbConnection dbConnection = _connection)
+            {
+                string query =
+                    "SELECT * FROM KU_KULLANICI (NOLOCK) WHERE E_MAIL=@e_mail AND DELETED=0";
+
+                return dbConnection.QueryFirstOrDefault<KU_KULLANICI>(query, new { @e_mail = e_mail });
+            }
+        }
+
+        public KU_KULLANICI UpdateWrongUserLoginCount(KU_KULLANICI entity)
+        {
+            using (IDbConnection dbConnection = _connection)
+            {
+                string query =
+                    "UPDATE KU_KULLANICI SET LOGIN_SAYISI=LOGIN_SAYISI+1 WHERE ID_KULLANICI=@ID_KULLANICI";
+
+                return dbConnection.QueryFirstOrDefault<KU_KULLANICI>(query, entity);
+            }
+        }
+
+        public KU_KULLANICI BlockAccount(KU_KULLANICI entity)
+        {
+            using (IDbConnection dbConnection = _connection)
+            {
+                string query =
+                    "UPDATE KU_KULLANICI SET IS_ACTIVE=0 WHERE ID_KULLANICI=@ID_KULLANICI";
+
+                return dbConnection.QueryFirstOrDefault<KU_KULLANICI>(query, entity);
             }
         }
     }

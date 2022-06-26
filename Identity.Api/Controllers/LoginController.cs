@@ -30,10 +30,18 @@ namespace Identity.Api.Controllers
         [HttpPost]
         public LoginResponse Login(LoginRequest request)
         {
-            var response = new LoginResponse();
+            LoginResponse loginResponse = new LoginResponse();
+            SecurityResponse securityResponse = new SecurityResponse();
             IdentityRepository repository = new IdentityRepository();
+
             SecurityRequest securityRequest = new SecurityRequest();
             securityRequest.SIFRE = request.SIFRE;
+
+            KU_KULLANICI LoginObj = new KU_KULLANICI();
+            LoginObj.E_MAIL = request.E_MAIL;
+            LoginObj.SIFRE = request.SIFRE;
+
+            #region #EncryptedPassword
 
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(ConfigReader.GetAppSettingsValue("EncryptionData"));
             httpWebRequest.ContentType = "application/json";
@@ -50,27 +58,76 @@ namespace Identity.Api.Controllers
             using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
             {
                 var responsePassword = streamReader.ReadToEnd();
-                var password = JsonConvert.DeserializeObject<SecurityResponse>(responsePassword);
-                request.SIFRE = password.EncryptPass;
+                securityResponse = JsonConvert.DeserializeObject<SecurityResponse>(responsePassword);
             }
 
-            KU_KULLANICI kullanici = repository.UserLogin(request.E_MAIL, request.SIFRE);
+            #endregion
 
-
-            if (kullanici != null)
+            if (securityResponse.IsSuccess) //Şifreleme başarılı ise
             {
-                response.IsSuccess = true;
-                response.Message = "Giriş işlemi başarılı !";
-                response.UserName = kullanici.AD_SOYAD;
-            }
-            else
-            {
-                response.IsSuccess = false;
-                response.Message = "Giriş işlemi başarısız !";
-                response.UserName = "";
+                LoginObj.SIFRE = securityResponse.EncryptPass;
+                KU_KULLANICI usernamePasswordCorrect = repository.UserLogin(LoginObj.E_MAIL, LoginObj.SIFRE);
+                KU_KULLANICI onlyUsernameCorrect = repository.UserLoginWithoutPassword(LoginObj.E_MAIL);
+
+                if (usernamePasswordCorrect != null) //Kullanıcı adı ve şifre doğru
+                {
+                    onlyUsernameCorrect =
+                        null; //Kullanıcı adı ve şifre doğru ise sadece kullanıcı adı doğru olanı null yapıyoruz.
+                    if (usernamePasswordCorrect.IS_ACTIVE == true &&
+                        usernamePasswordCorrect.LOGIN_SAYISI < 3) //Hesap aktif problem yok
+                    {
+                        loginResponse.IsSuccess = true;
+                        loginResponse.Message = "Giriş işlemi başarılı";
+                        loginResponse.UserName = usernamePasswordCorrect.E_MAIL;
+                        return loginResponse;
+                    }
+                    else if (usernamePasswordCorrect.IS_ACTIVE == false) //Hesap bloke
+                    {
+                        loginResponse.IsSuccess = false;
+                        loginResponse.Message = "Hesabınız aktif değil";
+                        loginResponse.UserName = usernamePasswordCorrect.E_MAIL;
+                        return loginResponse;
+                    }
+                } // Doğru login girişlerinde kullanılacak
+
+                if (onlyUsernameCorrect != null) //Kullanıcı adı doğru şifre yanlış
+                {
+                    if (onlyUsernameCorrect.IS_ACTIVE == false &&
+                        onlyUsernameCorrect.LOGIN_SAYISI > 3) // Hesap zaten bloke, bir daha yanlış giriliyor
+                    {
+                        loginResponse.Message = "Bloklanmış hesaba giriş yapılamaz !";
+                        loginResponse.IsSuccess = false;
+                        return loginResponse;
+                    }
+
+                    if (onlyUsernameCorrect.IS_ACTIVE == true &&
+                        onlyUsernameCorrect.LOGIN_SAYISI < 3) // Hesap aktif ve 3 defa yanlış giriş yapılmamış ise
+                    {
+                        repository.UpdateWrongUserLoginCount(onlyUsernameCorrect);
+                        loginResponse.Message = "Kullanıcı adı ile şifre eşleşmiyor";
+                        loginResponse.IsSuccess = false;
+                        loginResponse.UserName = onlyUsernameCorrect.E_MAIL;
+                        return loginResponse;
+                    }
+
+                    if (onlyUsernameCorrect.IS_ACTIVE == true &&
+                        onlyUsernameCorrect.LOGIN_SAYISI == 3) //Hesabı bloke etmek için
+                    {
+                        repository.BlockAccount(onlyUsernameCorrect);
+                        repository.UpdateWrongUserLoginCount(onlyUsernameCorrect);
+                        loginResponse.Message = "Hesabınız bloke edildi";
+                        loginResponse.IsSuccess = false;
+                        loginResponse.UserName = onlyUsernameCorrect.E_MAIL;
+                    }
+                }
+                else //Kullanıcı ve şifre ile eşleşen hesap bulunamadı !
+                {
+                    loginResponse.Message = "Hesap bulunamadı !";
+                    loginResponse.IsSuccess = false;
+                }
             }
 
-            return response;
+            return loginResponse;
         }
     }
 }

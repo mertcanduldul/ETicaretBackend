@@ -1,8 +1,12 @@
-﻿using Business.ServiceModel.Identity;
+﻿using System.Net;
+using Business.ServiceModel.Identity;
+using Business.ServiceModel.Security;
+using Dapper.Repository.Base;
 using Data.Dapper.Repository.Identity;
 using Data.Entity.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Newtonsoft.Json;
 
 namespace Identity.Api.Controllers
 {
@@ -25,23 +29,43 @@ namespace Identity.Api.Controllers
         }
 
         [HttpPost]
-        [Route("Registration")]
         public RegistrationResponse Registration(RegistrationRequest request)
         {
             try
             {
                 RegistrationResponse response = new RegistrationResponse();
                 IdentityRepository identityRepository = new IdentityRepository();
-                KU_KULLANICI existUser = new KU_KULLANICI();
-                existUser = identityRepository.HaveAccountWithThatEmail(request.E_MAIL);
+                KU_KULLANICI existUser = identityRepository.HaveAccountWithThatEmail(request.E_MAIL);
 
-                if (existUser.ID_KULLANICI > 0)
+                if (existUser != null)
                 {
                     response.IsSuccess = false;
                     response.Message = "E-Mail Adresi kullanılıyor. Üyelik Başarısız !";
                     return response;
                 }
 
+                SecurityRequest securityRequest = new SecurityRequest();
+                securityRequest.SIFRE = request.SIFRE;
+
+                var httpWebRequest =
+                    (HttpWebRequest)WebRequest.Create(ConfigReader.GetAppSettingsValue("EncryptionData"));
+                httpWebRequest.ContentType = "application/json";
+                httpWebRequest.Method = "POST";
+                using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                {
+                    string json = JsonConvert.SerializeObject(securityRequest);
+                    streamWriter.Write(json);
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                }
+
+                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    var responsePassword = streamReader.ReadToEnd();
+                    var password = JsonConvert.DeserializeObject<SecurityResponse>(responsePassword);
+                    request.SIFRE = password.EncryptPass;
+                }
 
                 KU_KULLANICI kullanici = new KU_KULLANICI();
                 kullanici.AD_SOYAD = request.AD_SOYAD;

@@ -5,7 +5,6 @@ namespace Data.Entity.Identity
 {
     public class KU_KULLANICI
     {
-        [Key]
         public int ID_KULLANICI { get; set; }
 
         public string AD_SOYAD { get; set; }

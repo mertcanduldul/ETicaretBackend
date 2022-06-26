@@ -44,7 +44,7 @@ namespace Security.Api.Controller
                     {
                         using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
                         {
-                            streamWriter.Write(request.Key);
+                            streamWriter.Write(request.SIFRE);
                         }
 
                         array = memoryStream.ToArray();
@@ -68,8 +68,8 @@ namespace Security.Api.Controller
             try
             {
                 byte[] iv = new byte[16];
-                byte[] buffer = Convert.FromBase64String(request.Key);
-                using(Aes aes = Aes.Create())
+                byte[] buffer = Convert.FromBase64String(request.SIFRE);
+                using (Aes aes = Aes.Create())
                 {
                     aes.Key = Encoding.UTF8.GetBytes(SECRET_KEY);
                     aes.IV = iv;
@@ -92,7 +92,7 @@ namespace Security.Api.Controller
             }
             catch (Exception ex)
             {
-                securityResponse.Message = ex.Message + "-" + request.Key;
+                securityResponse.Message = ex.Message + "-" + request.SIFRE;
                 securityResponse.IsSuccess = false;
                 securityResponse.Message = "Decryption Başarısız !";
                 return securityResponse;

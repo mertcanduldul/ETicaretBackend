@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using Business.ServiceModel.Security;
-using System.Security.Cryptography;
+
 
 namespace Security.Api.Controller
 {
@@ -9,7 +10,7 @@ namespace Security.Api.Controller
     [Route("api/[controller]")]
     public class SecurityController : ControllerBase
     {
-        private static readonly string SECRET_KEY = "b14ca5898a4e4133bbce2ea2315a1916";
+        private static readonly string SECRET_KEY = "b14ca5898a4e4133bbce2ea2315a1916"; //AES Secret Key
 
         private readonly ILogger<SecurityController> _logger;
 
@@ -29,74 +30,81 @@ namespace Security.Api.Controller
         public SecurityResponse EncryptionData(SecurityRequest request)
         {
             SecurityResponse securityResponse = new SecurityResponse();
-            byte[] iv = new byte[16];
-            byte[] array;
-
-            using (Aes aes = Aes.Create())
-            {
-                aes.Key = Encoding.UTF8.GetBytes(SECRET_KEY);
-                aes.IV = iv;
-                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    using (CryptoStream cryptoStream =
-                           new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
-                        {
-                            streamWriter.Write(request.SIFRE);
-                        }
-
-                        array = memoryStream.ToArray();
-                    }
-                }
-            }
-
-            securityResponse.EncryptPass = Convert.ToBase64String(array);
+            securityResponse.EncryptPass = EncryptString(request.SIFRE, SECRET_KEY);
             securityResponse.IsSuccess = true;
             securityResponse.Message = "Encryption Başarılı ";
             return securityResponse;
         }
-
 
         [Route("DecryptionData")]
         [HttpPost]
         public SecurityResponse DecryptionData(SecurityRequest request)
         {
             SecurityResponse securityResponse = new SecurityResponse();
+            securityResponse.DecryptPass = DecryptString(request.SIFRE, SECRET_KEY);
+            securityResponse.IsSuccess = true;
+            securityResponse.Message = "Decryption Başarılı ";
+            return securityResponse;
+        }
 
-            try
-            {
-                byte[] iv = new byte[16];
-                byte[] buffer = Convert.FromBase64String(request.SIFRE);
-                using (Aes aes = Aes.Create())
-                {
-                    aes.Key = Encoding.UTF8.GetBytes(SECRET_KEY);
-                    aes.IV = iv;
-                    ICryptoTransform decrypt = aes.CreateDecryptor(aes.Key, aes.IV);
-                    using (MemoryStream memoryStream = new MemoryStream(buffer))
-                    {
-                        using (CryptoStream cryptoStream =
-                               new CryptoStream((Stream)memoryStream, decrypt, CryptoStreamMode.Read))
-                        {
-                            using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
-                            {
-                                securityResponse.DecryptPass = streamReader.ReadToEnd();
-                                securityResponse.IsSuccess = true;
-                                securityResponse.Message = "Decryption Basarılı ";
-                                return securityResponse;
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                securityResponse.Message = ex.Message + "-" + request.SIFRE;
-                securityResponse.IsSuccess = false;
-                securityResponse.Message = "Decryption Başarısız !";
-                return securityResponse;
-            }
+        public static string EncryptString(string text, string password)
+        {
+            CryptoBusiness cryptoBusiness = new CryptoBusiness();
+            byte[] baPwd = Encoding.UTF8.GetBytes(password);
+
+            // şifre SHA256 ile hashleniyor.
+            byte[] baPwdHash = SHA256Managed.Create().ComputeHash(baPwd);
+
+            byte[] baText = Encoding.UTF8.GetBytes(text);
+
+            byte[] baSalt = GetRandomBytes();
+            byte[] baEncrypted = new byte[baSalt.Length + baText.Length];
+
+            // Salt dizisi ve text dizisi birleştiriliyor.
+            for (int i = 0; i < baSalt.Length; i++)
+                baEncrypted[i] = baSalt[i];
+            for (int i = 0; i < baText.Length; i++)
+                baEncrypted[i + baSalt.Length] = baText[i];
+
+            baEncrypted = cryptoBusiness.AES_Encrypt(baEncrypted, baPwdHash);
+
+            string result = Convert.ToBase64String(baEncrypted);
+            return result;
+        }
+
+        public static string DecryptString(string text, string password)
+        {
+            CryptoBusiness cryptoBusiness = new CryptoBusiness();
+            byte[] baPwd = Encoding.UTF8.GetBytes(password);
+
+            // şifre SHA256 ile hashleniyor.
+            byte[] baPwdHash = SHA256Managed.Create().ComputeHash(baPwd);
+
+            byte[] baText = Convert.FromBase64String(text);
+
+            byte[] baDecrypted = cryptoBusiness.AES_Decrypt(baText, baPwdHash);
+
+            // Salt kaldırılıyor
+            int saltLength = GetSaltLength();
+            byte[] baResult = new byte[baDecrypted.Length - saltLength];
+            for (int i = 0; i < baResult.Length; i++)
+                baResult[i] = baDecrypted[i + saltLength];
+
+            string result = Encoding.UTF8.GetString(baResult);
+            return result;
+        }
+
+        public static byte[] GetRandomBytes()
+        {
+            int saltLength = GetSaltLength();
+            byte[] ba = new byte[saltLength];
+            RNGCryptoServiceProvider.Create().GetBytes(ba);
+            return ba;
+        }
+
+        public static int GetSaltLength()
+        {
+            return 8;
         }
     }
 }

@@ -7,6 +7,9 @@ using Data.Entity.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
+using System.Security.Cryptography;
+using System.IO;
+using System.Text;
 
 namespace Identity.Api.Controllers
 {
@@ -95,5 +98,6 @@ namespace Identity.Api.Controllers
                 throw;
             }
         }
+
     }
 }

@@ -115,8 +115,9 @@ namespace Identity.Api.Controllers
                 if (onlyUsernameCorrect != null) //Kullanıcı adı doğru şifre yanlış
                 {
                     if (onlyUsernameCorrect.IS_ACTIVE == false &&
-                        onlyUsernameCorrect.LOGIN_SAYISI > 3) // Hesap zaten bloke, bir daha yanlış giriliyor
+                        onlyUsernameCorrect.LOGIN_SAYISI >= 3) // Hesap zaten bloke, bir daha yanlış giriliyor
                     {
+                        loginResponse.UserName = onlyUsernameCorrect.E_MAIL;
                         loginResponse.Message = "Bloklanmış hesaba giriş yapılamaz !";
                         loginResponse.IsSuccess = false;
                         return loginResponse;

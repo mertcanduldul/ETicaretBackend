@@ -31,6 +31,7 @@ namespace Security.Api.Controller
         {
             SecurityResponse securityResponse = new SecurityResponse();
             securityResponse.EncryptPass = EncryptString(request.SIFRE, SECRET_KEY);
+            securityResponse.DecryptPass = request.SIFRE;
             securityResponse.IsSuccess = true;
             securityResponse.Message = "Encryption Başarılı ";
             return securityResponse;
@@ -42,6 +43,7 @@ namespace Security.Api.Controller
         {
             SecurityResponse securityResponse = new SecurityResponse();
             securityResponse.DecryptPass = DecryptString(request.SIFRE, SECRET_KEY);
+            securityResponse.EncryptPass = request.SIFRE;
             securityResponse.IsSuccess = true;
             securityResponse.Message = "Decryption Başarılı ";
             return securityResponse;

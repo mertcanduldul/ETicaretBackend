@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,5 +22,8 @@
     <ProjectReference Include="..\Data\Data.Entity\Data.Entity.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Microsoft.AspNetCore.Authentication.JwtBearer" />
   </ItemGroup>
 </Project>

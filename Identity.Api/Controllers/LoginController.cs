@@ -6,6 +6,7 @@ using Data.Dapper.Repository.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ServiceModel.Identity;
 using Data.Entity.Identity;
+using Data.Entity.Token;
 using Newtonsoft.Json;
 
 namespace Identity.Api.Controllers
@@ -15,10 +16,12 @@ namespace Identity.Api.Controllers
     public class LoginController : ControllerBase
     {
         private readonly ILogger<LoginController> _logger;
+        readonly IConfiguration _configuration;
 
-        public LoginController(ILogger<LoginController> logger)
+        public LoginController(ILogger<LoginController> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -34,20 +37,30 @@ namespace Identity.Api.Controllers
             SecurityResponse securityResponse = new SecurityResponse();
             IdentityRepository repository = new IdentityRepository();
 
-            SecurityRequest securityRequest = new SecurityRequest();
-            securityRequest.SIFRE = request.SIFRE;
+            KU_KULLANICI FrontEndLoginObj = new KU_KULLANICI();
+            FrontEndLoginObj.E_MAIL = request.E_MAIL;
+            FrontEndLoginObj.SIFRE = request.SIFRE;
 
-            KU_KULLANICI LoginObj = new KU_KULLANICI();
-            LoginObj.E_MAIL = request.E_MAIL;
-            LoginObj.SIFRE = request.SIFRE;
+            KU_KULLANICI BackEndLoginObj = new KU_KULLANICI();
+            BackEndLoginObj.E_MAIL = request.E_MAIL;
 
-            #region #EncryptedPassword
+            KU_KULLANICI whichAccount = repository.UserLoginWithoutPassword(FrontEndLoginObj.E_MAIL);
+            if (whichAccount == null)
+            {
+                loginResponse.Message = "Kullanıcı bulunamadı.";
+                loginResponse.IsSuccess = false;
+                return loginResponse;
+            }
 
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(ConfigReader.GetAppSettingsValue("EncryptionData"));
+            #region #DecryptPassword from db
+
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(ConfigReader.GetAppSettingsValue("DecryptionData"));
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "POST";
             using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
             {
+                SecurityRequest securityRequest = new SecurityRequest();
+                securityRequest.SIFRE = whichAccount.SIFRE;
                 string json = JsonConvert.SerializeObject(securityRequest);
                 streamWriter.Write(json);
                 streamWriter.Flush();
@@ -63,22 +76,31 @@ namespace Identity.Api.Controllers
 
             #endregion
 
-            if (securityResponse.IsSuccess) //Şifreleme başarılı ise
+            if (securityResponse.IsSuccess) //Şifre Çözme başarılı ise
             {
-                LoginObj.SIFRE = securityResponse.EncryptPass;
-                KU_KULLANICI usernamePasswordCorrect = repository.UserLogin(LoginObj.E_MAIL, LoginObj.SIFRE);
-                KU_KULLANICI onlyUsernameCorrect = repository.UserLoginWithoutPassword(LoginObj.E_MAIL);
+                BackEndLoginObj.SIFRE = securityResponse.DecryptPass;
+
+                KU_KULLANICI usernamePasswordCorrect = null;
+                KU_KULLANICI onlyUsernameCorrect = null;
+
+                if (FrontEndLoginObj.SIFRE == BackEndLoginObj.SIFRE)
+                    usernamePasswordCorrect = repository.UserLoginWithoutPassword(FrontEndLoginObj.E_MAIL);
+                else
+                    onlyUsernameCorrect = repository.UserLoginWithoutPassword(FrontEndLoginObj.E_MAIL);
+
 
                 if (usernamePasswordCorrect != null) //Kullanıcı adı ve şifre doğru
                 {
-                    onlyUsernameCorrect =
-                        null; //Kullanıcı adı ve şifre doğru ise sadece kullanıcı adı doğru olanı null yapıyoruz.
                     if (usernamePasswordCorrect.IS_ACTIVE == true &&
                         usernamePasswordCorrect.LOGIN_SAYISI < 3) //Hesap aktif problem yok
                     {
+                        //Token Burada üretildiği için kullanıcıya gönderiyoruz.
+                        TokenHandler tokenHandler = new TokenHandler(_configuration);
+                        Token token = tokenHandler.CreateAccessToken(usernamePasswordCorrect);
                         loginResponse.IsSuccess = true;
                         loginResponse.Message = "Giriş işlemi başarılı";
                         loginResponse.UserName = usernamePasswordCorrect.E_MAIL;
+                        loginResponse.Token = token.AccessToken;
                         return loginResponse;
                     }
                     else if (usernamePasswordCorrect.IS_ACTIVE == false) //Hesap bloke
@@ -88,7 +110,7 @@ namespace Identity.Api.Controllers
                         loginResponse.UserName = usernamePasswordCorrect.E_MAIL;
                         return loginResponse;
                     }
-                } // Doğru login girişlerinde kullanılacak
+                }
 
                 if (onlyUsernameCorrect != null) //Kullanıcı adı doğru şifre yanlış
                 {

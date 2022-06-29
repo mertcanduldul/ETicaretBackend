@@ -1,6 +1,6 @@
 namespace Data.Entity.Product;
 
-public class UR_URUN_JOIN
+public class ProductResponse
 {
     public int ID_URUN { get; set; }
     public string URUN_ADI { get; set; }

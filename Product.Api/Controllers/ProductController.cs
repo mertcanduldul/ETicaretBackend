@@ -38,4 +38,31 @@ public class ProductController : ControllerBase
         var productList = repository.GetProductByCategoryName(categoryName);
         return Ok(productList);
     }
+
+    [HttpGet]
+    [Route("GetAllColors")]
+    public IActionResult GetAllColors()
+    {
+        ProductRepository repository = new ProductRepository();
+        var colorList = repository.GetAllColors();
+        return Ok(colorList);
+    }
+
+    [HttpGet]
+    [Route("GetAllBrands")]
+    public IActionResult GetAllBrands()
+    {
+        ProductRepository repository = new ProductRepository();
+        var brandList = repository.GetAllBrands();
+        return Ok(brandList);
+    }
+
+    [HttpGet]
+    [Route("GetAllUsageStatuses")]
+    public IActionResult GetAllUsageStatuses()
+    {
+        ProductRepository repository = new ProductRepository();
+        var usageStatusList = repository.GetAllUsageStatuses();
+        return Ok(usageStatusList);
+    }
 }

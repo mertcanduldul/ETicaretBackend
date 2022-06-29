@@ -54,7 +54,7 @@ public class ProductRepository : BaseRepository, IDataRepository<UR_URUN>
         throw new NotImplementedException();
     }
 
-    public IEnumerable<UR_URUN_JOIN> GetProductByCategoryName(string categoryName)
+    public IEnumerable<ProductResponse> GetProductByCategoryName(string categoryName)
     {
         using (IDbConnection dbConnection = _connection)
         {
@@ -66,11 +66,11 @@ public class ProductRepository : BaseRepository, IDataRepository<UR_URUN>
                     INNER JOIN UR_MARKA (NOLOCK) UM ON UM.ID_MARKA=UU.ID_MARKA
                     INNER JOIN UR_KULLANIM_DURUM (NOLOCK) UKD ON UKD.ID_KULLANIM_DURUM = UU.ID_KULLANIM_DURUMU
                     WHERE UU.DELETED = 0 AND UK.KATEGORI_ADI=@categoryName");
-            return dbConnection.Query<UR_URUN_JOIN>(query, new { @categoryName = categoryName });
+            return dbConnection.Query<ProductResponse>(query, new { @categoryName = categoryName });
         }
     }
 
-    public IEnumerable<UR_URUN_JOIN> GetAllProducts()
+    public IEnumerable<ProductResponse> GetAllProducts()
     {
         using (IDbConnection dbConnection = _connection)
         {
@@ -81,7 +81,34 @@ public class ProductRepository : BaseRepository, IDataRepository<UR_URUN>
                     INNER JOIN UR_MARKA (NOLOCK) UM ON UM.ID_MARKA=UU.ID_MARKA
                     INNER JOIN UR_KULLANIM_DURUM (NOLOCK) UKD ON UKD.ID_KULLANIM_DURUM = UU.ID_KULLANIM_DURUMU
                     WHERE UU.DELETED = 0";
-            return dbConnection.Query<UR_URUN_JOIN>(query);
+            return dbConnection.Query<ProductResponse>(query);
+        }
+    }
+
+    public IEnumerable<UR_RENK> GetAllColors()
+    {
+        using (IDbConnection dbConnection = _connection)
+        {
+            string query = @"SELECT * FROM UR_RENK (NOLOCK) UR WHERE UR.DELETED = 0";
+            return dbConnection.Query<UR_RENK>(query).ToList();
+        }
+    }
+
+    public IEnumerable<UR_MARKA> GetAllBrands()
+    {
+        using (IDbConnection dbConnection = _connection)
+        {
+            string query = @"SELECT * FROM UR_MARKA (NOLOCK) UM WHERE UM.DELETED = 0";
+            return dbConnection.Query<UR_MARKA>(query).ToList();
+        }
+    }
+
+    public IEnumerable<UR_KULLANIM_DURUM> GetAllUsageStatuses()
+    {
+        using (IDbConnection dbConnection = _connection)
+        {
+            string query = @"SELECT * FROM UR_KULLANIM_DURUM (NOLOCK) UKD WHERE UKD.DELETED = 0";
+            return dbConnection.Query<UR_KULLANIM_DURUM>(query).ToList();
         }
     }
 }

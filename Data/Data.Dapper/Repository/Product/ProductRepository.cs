@@ -31,8 +31,8 @@ public class ProductRepository : BaseRepository, IDataRepository<UR_URUN>
         using (IDbConnection dbConnection = _connection)
         {
             string query =
-                @"INSERT INTO UR_URUN (URUN_ADI,URUN_ACIKLAMA,ID_KATEGORI,ID_KULLANIM_DURUMU,ID_KULLANIM_DURUMU,ID_MARKA,ID_RENK,IS_SOLD,IS_OFFERABLE)
-            VALUES(@URUN_ADI,@URUN_ACIKLAMA,@ID_KATEGORI,@ID_KULLANIM_DURUMU,@ID_MARKA,@ID_RENK,@IS_SOLD,@IS_OFFERABLE)";
+                @"INSERT INTO UR_URUN (URUN_ADI,URUN_ACIKLAMA,ID_KATEGORI,ID_RENK,ID_MARKA,ID_KULLANIM_DURUMU,FIYAT,IS_OFFERABLE,IS_SOLD,CREDATE)
+            VALUES(@URUN_ADI,@URUN_ACIKLAMA,@ID_KATEGORI,@ID_RENK,@ID_MARKA,@ID_KULLANIM_DURUMU,@FIYAT,@IS_OFFERABLE,@IS_SOLD,@CREDATE)";
             dbConnection.Execute(query, entity);
         }
     }

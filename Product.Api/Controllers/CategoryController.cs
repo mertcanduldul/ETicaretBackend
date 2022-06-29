@@ -28,7 +28,7 @@ public class CategoryController : ControllerBase
     public List<CategoryResponse> GetAllCategory()
     {
         List<CategoryResponse> categoryResponses = new List<CategoryResponse>();
-        ProductRepository productRepository = new ProductRepository();
+        CategoryRepository productRepository = new CategoryRepository();
         List<UR_KATEGORI> KategoriList = productRepository.GetAll().ToList();
 
         foreach (var item in KategoriList)
@@ -47,7 +47,7 @@ public class CategoryController : ControllerBase
     [Route("GetCategoryByCategoryName")]
     public CategoryResponse GetCategoryByCategoryName(string name)
     {
-        ProductRepository productRepository = new ProductRepository();
+        CategoryRepository productRepository = new CategoryRepository();
         CategoryResponse response = new CategoryResponse();
         UR_KATEGORI category = productRepository.GetCategoryByCategoryName(name);
 
@@ -69,7 +69,7 @@ public class CategoryController : ControllerBase
     [Route("AddCategory")]
     public ServicesResponse AddCategory(CategoryRequest request)
     {
-        ProductRepository productRepository = new ProductRepository();
+        CategoryRepository productRepository = new CategoryRepository();
         ServicesResponse response = new ServicesResponse();
         UR_KATEGORI category = new UR_KATEGORI();
 
@@ -85,7 +85,7 @@ public class CategoryController : ControllerBase
     [Route("UpdateCategoryByIdCategory")]
     public ServicesResponse UpdateCategoryByIdCategory(UpdateCategoryRequest request)
     {
-        ProductRepository productRepository = new ProductRepository();
+        CategoryRepository productRepository = new CategoryRepository();
         ServicesResponse response = new ServicesResponse();
         UR_KATEGORI category = new UR_KATEGORI();
 

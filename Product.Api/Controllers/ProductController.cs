@@ -82,6 +82,7 @@ public class ProductController : ControllerBase
         obj.ID_KULLANIM_DURUMU = request.ID_KULLANIM_DURUMU;
         obj.IS_OFFERABLE = request.IS_OFFERABLE;
         obj.FIYAT = request.FIYAT;
+        obj.ID_KULLANICI = request.ID_URUN_SAHIBI;
         obj.CREDATE = DateTime.Now;
 
         repository.Add(obj);

@@ -10,4 +10,5 @@ public class AddProductRequest
     public int ID_KULLANIM_DURUMU { get; set; }
     public int FIYAT { get; set; }
     public bool IS_OFFERABLE { get; set; }
+    public int ID_URUN_SAHIBI { get; set; }
 }

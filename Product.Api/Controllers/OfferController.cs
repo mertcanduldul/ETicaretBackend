@@ -1,3 +1,4 @@
+using Business.ServiceModel.Product;
 using Data.Dapper.Repository.Product;
 using Data.Entity.Product;
 using Microsoft.AspNetCore.Mvc;
@@ -104,10 +105,10 @@ public class OfferController : ControllerBase
 
     [HttpPost]
     [Route("BuyProduct")]
-    public ServicesResponse BuyProduct(int idKullanici, int idUrun)
+    public ServicesResponse BuyProduct(BuyProductRequest request)
     {
         OfferRepository offerRepository = new OfferRepository();
-        offerRepository.BuyProduct(idKullanici, idUrun);
+        offerRepository.BuyProduct(request.idKullanici, request.idUrun);
         return new ServicesResponse
         {
             IsSuccess = true,

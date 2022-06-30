@@ -127,6 +127,14 @@ WHERE ST.DELETED=0 AND ST.ID_URUN_SAHIBI=@ID_URUN_SAHIBI
             string query =
                 @"UPDATE SP_TEKLIF SET ID_TEKLIF_DURUM=2,ID_TEKLIF_VEREN=@idkullanici WHERE ID_TEKLIF=@idOffer";
             dbConnection.Execute(query, new { idkullanici = idKullanici, idOffer = idOffer });
+
+            query = @"
+UPDATE UR_URUN SET IS_SOLD=1 WHERE ID_URUN 
+IN(SELECT UU.ID_URUN
+FROM UR_URUN UU
+    INNER JOIN SP_TEKLIF ST ON ST.ID_URUN = UU.ID_URUN
+WHERE ID_TEKLIF=@idOffer)";
+            dbConnection.Execute(query, new { idOffer = idOffer });
         }
     }
 

@@ -48,7 +48,7 @@ public class OfferController : ControllerBase
     public IActionResult GetOfferOfUser(int idUser)
     {
         OfferRepository offerRepository = new OfferRepository();
-        var offer = offerRepository.GetOfferOfUser(idUser).FirstOrDefault();
+        var offer = offerRepository.GetOfferOfUser(idUser).ToList();
         return Ok(offer != null ? offer : "No offer found");
     }
 

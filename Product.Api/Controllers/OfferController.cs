@@ -33,11 +33,22 @@ public class OfferController : ControllerBase
     }
 
     [HttpGet]
+    [Route("PostOfferOfUser")]
+    [Tags("Kullanıcının Verdiği Teklifleri Listeler !")]
+    public IActionResult PostOfferOfUser(int idUser)
+    {
+        OfferRepository offerRepository = new OfferRepository();
+        SP_TEKLIF offer = offerRepository.PostOfferOfUser(idUser).FirstOrDefault();
+        return Ok(offer != null ? offer : "No offer found");
+    }
+
+    [HttpGet]
     [Route("GetOfferOfUser")]
+    [Tags("Kullanıcıya Gelen Teklifleri Listeler !")]
     public IActionResult GetOfferOfUser(int idUser)
     {
         OfferRepository offerRepository = new OfferRepository();
-        SP_TEKLIF offer = offerRepository.GetOfferOfUser(idUser).FirstOrDefault();
+        var offer = offerRepository.GetOfferOfUser(idUser).FirstOrDefault();
         return Ok(offer != null ? offer : "No offer found");
     }
 
@@ -55,14 +66,13 @@ public class OfferController : ControllerBase
     public ServicesResponse AddOffer(OfferRequest request)
     {
         OfferRepository offerRepository = new OfferRepository();
-        offerRepository.AddOffer(request.idKullanici, request.idUrun, request.fiyat,request.idUrunSahibi);
+        offerRepository.AddOffer(request.idKullanici, request.idUrun, request.fiyat, request.idUrunSahibi);
         return new ServicesResponse
         {
             Message = "Teklif Verildi !",
             IsSuccess = true
         };
     }
-
 
     [HttpPost]
     [Route("DeleteOffer")]

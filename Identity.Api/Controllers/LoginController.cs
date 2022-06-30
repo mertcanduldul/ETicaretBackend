@@ -98,7 +98,7 @@ namespace Identity.Api.Controllers
                         TokenHandler tokenHandler = new TokenHandler(_configuration);
                         Token token = tokenHandler.CreateAccessToken(usernamePasswordCorrect);
                         loginResponse.IsSuccess = true;
-                        loginResponse.Message = "Giriş işlemi başarılı";
+                        loginResponse.Message = "Giriş işlemi başarılı !";
                         loginResponse.UserName = usernamePasswordCorrect.AD_SOYAD;
                         loginResponse.Token = token.AccessToken;
                         loginResponse.UserId = usernamePasswordCorrect.ID_KULLANICI;
@@ -108,7 +108,7 @@ namespace Identity.Api.Controllers
                     else if (usernamePasswordCorrect.IS_ACTIVE == false) //Hesap bloke
                     {
                         loginResponse.IsSuccess = false;
-                        loginResponse.Message = "Hesabınız aktif değil";
+                        loginResponse.Message = "Hesabınız aktif değil !";
                         loginResponse.UserName = usernamePasswordCorrect.AD_SOYAD;
                         loginResponse.UserId = usernamePasswordCorrect.ID_KULLANICI;
                         loginResponse.UserMail = usernamePasswordCorrect.E_MAIL;
@@ -121,11 +121,9 @@ namespace Identity.Api.Controllers
                     if (onlyUsernameCorrect.IS_ACTIVE == false &&
                         onlyUsernameCorrect.LOGIN_SAYISI >= 3) // Hesap zaten bloke, bir daha yanlış giriliyor
                     {
-                        loginResponse.UserName = onlyUsernameCorrect.AD_SOYAD;
-                        loginResponse.Message = "Bloklanmış hesaba giriş yapılamaz !";
+                        loginResponse.Message = "Kullanıcı adı ile şifre eşleşmiyor !";
                         loginResponse.IsSuccess = false;
                         loginResponse.UserId = onlyUsernameCorrect.ID_KULLANICI;
-                        loginResponse.UserMail = onlyUsernameCorrect.E_MAIL;
                         return loginResponse;
                     }
 
@@ -133,7 +131,7 @@ namespace Identity.Api.Controllers
                         onlyUsernameCorrect.LOGIN_SAYISI < 3) // Hesap aktif ve 3 defa yanlış giriş yapılmamış ise
                     {
                         repository.UpdateWrongUserLoginCount(onlyUsernameCorrect);
-                        loginResponse.Message = "Kullanıcı adı ile şifre eşleşmiyor";
+                        loginResponse.Message = "Kullanıcı adı ile şifre eşleşmiyor !";
                         loginResponse.IsSuccess = false;
                         loginResponse.UserId = onlyUsernameCorrect.ID_KULLANICI;
                         return loginResponse;
@@ -144,7 +142,7 @@ namespace Identity.Api.Controllers
                     {
                         repository.BlockAccount(onlyUsernameCorrect);
                         repository.UpdateWrongUserLoginCount(onlyUsernameCorrect);
-                        loginResponse.Message = "Hesabınız bloke edildi";
+                        loginResponse.Message = "Hesabınız bloke edildi !";
                         loginResponse.IsSuccess = false;
                         loginResponse.UserId = onlyUsernameCorrect.ID_KULLANICI;
                         return loginResponse;

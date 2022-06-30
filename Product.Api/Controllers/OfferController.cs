@@ -89,10 +89,10 @@ public class OfferController : ControllerBase
 
     [HttpPost]
     [Route("AcceptOffer")]
-    public ServicesResponse AcceptOffer([FromBody] int idOffer, int idKullanici)
+    public ServicesResponse AcceptOffer(AcceptOfferRequest request)
     {
         OfferRepository offerRepository = new OfferRepository();
-        offerRepository.AcceptOffer(idOffer, idKullanici);
+        offerRepository.AcceptOffer(request.idOffer, request.idKullanici);
         return new ServicesResponse
         {
             IsSuccess = true,

@@ -99,7 +99,7 @@ namespace Identity.Api.Controllers
                         Token token = tokenHandler.CreateAccessToken(usernamePasswordCorrect);
                         loginResponse.IsSuccess = true;
                         loginResponse.Message = "Giriş işlemi başarılı";
-                        loginResponse.UserName = usernamePasswordCorrect.E_MAIL;
+                        loginResponse.UserName = usernamePasswordCorrect.AD_SOYAD;
                         loginResponse.Token = token.AccessToken;
                         loginResponse.UserId = usernamePasswordCorrect.ID_KULLANICI;
                         loginResponse.UserMail = usernamePasswordCorrect.E_MAIL;
@@ -109,7 +109,7 @@ namespace Identity.Api.Controllers
                     {
                         loginResponse.IsSuccess = false;
                         loginResponse.Message = "Hesabınız aktif değil";
-                        loginResponse.UserName = usernamePasswordCorrect.E_MAIL;
+                        loginResponse.UserName = usernamePasswordCorrect.AD_SOYAD;
                         loginResponse.UserId = usernamePasswordCorrect.ID_KULLANICI;
                         loginResponse.UserMail = usernamePasswordCorrect.E_MAIL;
                         return loginResponse;
@@ -121,7 +121,7 @@ namespace Identity.Api.Controllers
                     if (onlyUsernameCorrect.IS_ACTIVE == false &&
                         onlyUsernameCorrect.LOGIN_SAYISI >= 3) // Hesap zaten bloke, bir daha yanlış giriliyor
                     {
-                        loginResponse.UserName = onlyUsernameCorrect.E_MAIL;
+                        loginResponse.UserName = onlyUsernameCorrect.AD_SOYAD;
                         loginResponse.Message = "Bloklanmış hesaba giriş yapılamaz !";
                         loginResponse.IsSuccess = false;
                         loginResponse.UserId = onlyUsernameCorrect.ID_KULLANICI;
@@ -135,7 +135,7 @@ namespace Identity.Api.Controllers
                         repository.UpdateWrongUserLoginCount(onlyUsernameCorrect);
                         loginResponse.Message = "Kullanıcı adı ile şifre eşleşmiyor";
                         loginResponse.IsSuccess = false;
-                        loginResponse.UserName = onlyUsernameCorrect.E_MAIL;
+                        loginResponse.UserName = onlyUsernameCorrect.AD_SOYAD;
                         loginResponse.UserId = onlyUsernameCorrect.ID_KULLANICI;
                         loginResponse.UserMail = onlyUsernameCorrect.E_MAIL;
                         return loginResponse;
@@ -148,7 +148,7 @@ namespace Identity.Api.Controllers
                         repository.UpdateWrongUserLoginCount(onlyUsernameCorrect);
                         loginResponse.Message = "Hesabınız bloke edildi";
                         loginResponse.IsSuccess = false;
-                        loginResponse.UserName = onlyUsernameCorrect.E_MAIL;
+                        loginResponse.UserName = onlyUsernameCorrect.AD_SOYAD;
                         loginResponse.UserId = onlyUsernameCorrect.ID_KULLANICI;
                         loginResponse.UserMail = onlyUsernameCorrect.E_MAIL;
                         return loginResponse;

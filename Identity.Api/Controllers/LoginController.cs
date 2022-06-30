@@ -101,6 +101,8 @@ namespace Identity.Api.Controllers
                         loginResponse.Message = "Giriş işlemi başarılı";
                         loginResponse.UserName = usernamePasswordCorrect.E_MAIL;
                         loginResponse.Token = token.AccessToken;
+                        loginResponse.UserId = usernamePasswordCorrect.ID_KULLANICI;
+                        loginResponse.UserMail = usernamePasswordCorrect.E_MAIL;
                         return loginResponse;
                     }
                     else if (usernamePasswordCorrect.IS_ACTIVE == false) //Hesap bloke
@@ -108,6 +110,8 @@ namespace Identity.Api.Controllers
                         loginResponse.IsSuccess = false;
                         loginResponse.Message = "Hesabınız aktif değil";
                         loginResponse.UserName = usernamePasswordCorrect.E_MAIL;
+                        loginResponse.UserId = usernamePasswordCorrect.ID_KULLANICI;
+                        loginResponse.UserMail = usernamePasswordCorrect.E_MAIL;
                         return loginResponse;
                     }
                 }
@@ -120,6 +124,8 @@ namespace Identity.Api.Controllers
                         loginResponse.UserName = onlyUsernameCorrect.E_MAIL;
                         loginResponse.Message = "Bloklanmış hesaba giriş yapılamaz !";
                         loginResponse.IsSuccess = false;
+                        loginResponse.UserId = onlyUsernameCorrect.ID_KULLANICI;
+                        loginResponse.UserMail = onlyUsernameCorrect.E_MAIL;
                         return loginResponse;
                     }
 
@@ -130,6 +136,8 @@ namespace Identity.Api.Controllers
                         loginResponse.Message = "Kullanıcı adı ile şifre eşleşmiyor";
                         loginResponse.IsSuccess = false;
                         loginResponse.UserName = onlyUsernameCorrect.E_MAIL;
+                        loginResponse.UserId = onlyUsernameCorrect.ID_KULLANICI;
+                        loginResponse.UserMail = onlyUsernameCorrect.E_MAIL;
                         return loginResponse;
                     }
 
@@ -141,12 +149,16 @@ namespace Identity.Api.Controllers
                         loginResponse.Message = "Hesabınız bloke edildi";
                         loginResponse.IsSuccess = false;
                         loginResponse.UserName = onlyUsernameCorrect.E_MAIL;
+                        loginResponse.UserId = onlyUsernameCorrect.ID_KULLANICI;
+                        loginResponse.UserMail = onlyUsernameCorrect.E_MAIL;
+                        return loginResponse;
                     }
                 }
                 else //Kullanıcı ve şifre ile eşleşen hesap bulunamadı !
                 {
                     loginResponse.Message = "Hesap bulunamadı !";
                     loginResponse.IsSuccess = false;
+                    return loginResponse;
                 }
             }
 

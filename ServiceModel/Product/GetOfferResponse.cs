@@ -8,4 +8,5 @@ public class GetOfferResponse
     public string TEKLIF_VEREN { get; set; }
     public string URUN_SAHIBI { get; set; }
     public int TEKLIF_FIYATI { get; set; }
+    public int ID_TEKLIF_VEREN { get; set; }
 }

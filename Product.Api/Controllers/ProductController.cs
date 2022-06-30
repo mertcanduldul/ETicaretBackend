@@ -91,4 +91,13 @@ public class ProductController : ControllerBase
             Message = "Ürün başarıyla eklendi."
         };
     }
+    
+    [HttpGet]
+    [Route("GetUserProduct")]
+    public IActionResult GetUserProduct(int userId)
+    {
+        ProductRepository repository = new ProductRepository();
+        var productList = repository.GetUserProduct(userId);
+        return Ok(productList);
+    }
 }

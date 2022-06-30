@@ -14,4 +14,5 @@ public class UR_URUN
     public bool IS_SOLD { get; set; }
     public DateTime CREDATE { get; set; }
     public bool DELETED { get; set; }
+    public int ID_KULLANICI { get; set; }
 }

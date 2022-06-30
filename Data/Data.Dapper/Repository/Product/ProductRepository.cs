@@ -80,7 +80,7 @@ public class ProductRepository : BaseRepository, IDataRepository<UR_URUN>
                     INNER JOIN UR_RENK (NOLOCK) UR ON UR.ID_RENK = UU.ID_RENK
                     INNER JOIN UR_MARKA (NOLOCK) UM ON UM.ID_MARKA=UU.ID_MARKA
                     INNER JOIN UR_KULLANIM_DURUM (NOLOCK) UKD ON UKD.ID_KULLANIM_DURUM = UU.ID_KULLANIM_DURUMU
-                    WHERE UU.DELETED = 0";
+                    WHERE UU.DELETED = 0 AND UU.IS_SOLD=0";
             return dbConnection.Query<ProductResponse>(query);
         }
     }
@@ -109,6 +109,21 @@ public class ProductRepository : BaseRepository, IDataRepository<UR_URUN>
         {
             string query = @"SELECT * FROM UR_KULLANIM_DURUM (NOLOCK) UKD WHERE UKD.DELETED = 0";
             return dbConnection.Query<UR_KULLANIM_DURUM>(query).ToList();
+        }
+    }
+
+    public IEnumerable<ProductResponse> GetUserProduct(int idKullanici)
+    {
+        using (IDbConnection dbConnection = _connection)
+        {
+            string query =
+                @"SELECT UU.ID_URUN,UU.URUN_ADI,UU.URUN_ACIKLAMA,UU.FIYAT,UU.IS_SOLD,UU.IS_OFFERABLE,UK.KATEGORI_ADI,UR.RENK_ADI,UM.MARKA_ADI,UKD.KULLANIM_DURUM_ADI FROM UR_URUN (NOLOCK) UU
+                    INNER JOIN UR_KATEGORI (NOLOCK) UK ON UK.ID_KATEGORI=UU.ID_KATEGORI
+                    INNER JOIN UR_RENK (NOLOCK) UR ON UR.ID_RENK = UU.ID_RENK
+                    INNER JOIN UR_MARKA (NOLOCK) UM ON UM.ID_MARKA=UU.ID_MARKA
+                    INNER JOIN UR_KULLANIM_DURUM (NOLOCK) UKD ON UKD.ID_KULLANIM_DURUM = UU.ID_KULLANIM_DURUMU
+                    WHERE UU.DELETED = 0 AND UU.ID_KULLANICI=@idKullanici";
+            return dbConnection.Query<ProductResponse>(query, new { @idKullanici = idKullanici }).ToList();
         }
     }
 }

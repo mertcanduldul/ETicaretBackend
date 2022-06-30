@@ -35,8 +35,8 @@ public class OfferRepository : BaseRepository, IDataRepository<SP_TEKLIF>
         using (IDbConnection dbConnection = _connection)
         {
             string query =
-                @"INSERT INTO SP_TEKLIF (ID_URUN,TEKLIF_FIYATI,ID_TEKLIF_DURUM,ID_TEKLIF_VEREN,ID_URUN_SAHIBI)
-                VALUES(@ID_URUN,@TEKLIF_FIYATI,@ID_TEKLIF_DURUM,@ID_TEKLIF_VEREN,@ID_URUN_SAHIBI)";
+                @"INSERT INTO SP_TEKLIF (ID_URUN,TEKLIF_FIYATI,ID_TEKLIF_DURUM,ID_TEKLIF_VEREN,ID_URUN_SAHIBI,CREDATE)
+                VALUES(@ID_URUN,@TEKLIF_FIYATI,@ID_TEKLIF_DURUM,@ID_TEKLIF_VEREN,@ID_URUN_SAHIBI,GETDATE())";
             dbConnection.Execute(query,
                 new
                 {

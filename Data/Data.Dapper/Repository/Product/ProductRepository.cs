@@ -80,7 +80,8 @@ public class ProductRepository : BaseRepository, IDataRepository<UR_URUN>
                     INNER JOIN UR_RENK (NOLOCK) UR ON UR.ID_RENK = UU.ID_RENK
                     INNER JOIN UR_MARKA (NOLOCK) UM ON UM.ID_MARKA=UU.ID_MARKA
                     INNER JOIN UR_KULLANIM_DURUM (NOLOCK) UKD ON UKD.ID_KULLANIM_DURUM = UU.ID_KULLANIM_DURUMU
-                    WHERE UU.DELETED = 0 AND UU.IS_SOLD=0";
+                    WHERE UU.DELETED = 0 AND UU.IS_SOLD=0
+                    ORDER BY UU.ID_URUN DESC";
             return dbConnection.Query<ProductResponse>(query);
         }
     }

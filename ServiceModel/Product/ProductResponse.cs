@@ -12,4 +12,5 @@ public class ProductResponse
     public string RENK_ADI { get; set; }
     public string MARKA_ADI { get; set; }
     public string KULLANIM_DURUM_ADI { get; set; }
+    public int ID_URUN_SAHIBI { get; set; }
 }

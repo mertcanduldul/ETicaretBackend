@@ -29,15 +29,19 @@ public class OfferRepository : BaseRepository, IDataRepository<SP_TEKLIF>
     {
     }
 
-    public void AddOffer(int idKullanici, int idUrun, int fiyat,int idUrunSahibi)
+    public void AddOffer(int idKullanici, int idUrun, int fiyat, int idUrunSahibi)
     {
         using (IDbConnection dbConnection = _connection)
         {
             string query =
-                @"INSERT INTO SP_TEKLIF (ID_URUN,TEKLIF_FIYATI,ID_TEKLIF_DURUM,ID_TEKLIF_VEREN)
-                VALUES(@ID_URUN,@TEKLIF_FIYATI,@ID_TEKLIF_DURUM,@ID_TEKLIF_VEREN)";
+                @"INSERT INTO SP_TEKLIF (ID_URUN,TEKLIF_FIYATI,ID_TEKLIF_DURUM,ID_TEKLIF_VEREN,ID_URUN_SAHIBI)
+                VALUES(@ID_URUN,@TEKLIF_FIYATI,@ID_TEKLIF_DURUM,@ID_TEKLIF_VEREN,@ID_URUN_SAHIBI)";
             dbConnection.Execute(query,
-                new { ID_URUN = idUrun, TEKLIF_FIYATI = fiyat, ID_TEKLIF_DURUM = 1, ID_TEKLIF_VEREN = idKullanici });
+                new
+                {
+                    ID_URUN = idUrun, TEKLIF_FIYATI = fiyat, ID_TEKLIF_DURUM = 1, ID_TEKLIF_VEREN = idKullanici,
+                    ID_URUN_SAHIBI = idUrunSahibi
+                });
         }
     }
 

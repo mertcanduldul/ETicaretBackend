@@ -38,7 +38,7 @@ public class OfferController : ControllerBase
     public IActionResult PostOfferOfUser(int idUser)
     {
         OfferRepository offerRepository = new OfferRepository();
-        SP_TEKLIF offer = offerRepository.PostOfferOfUser(idUser).FirstOrDefault();
+        var offer = offerRepository.PostOfferOfUser(idUser).ToList();
         return Ok(offer != null ? offer : "No offer found");
     }
 

@@ -79,13 +79,22 @@ public class OfferRepository : BaseRepository, IDataRepository<SP_TEKLIF>
         }
     }
 
-    public IEnumerable<SP_TEKLIF> PostOfferOfUser(int idKullanici)
+    public IEnumerable<GetOfferResponse> PostOfferOfUser(int idKullanici)
     {
         using (IDbConnection dbConnection = _connection)
         {
             string query =
-                @"SELECT * FROM SP_TEKLIF (NOLOCK) ST WHERE ST.DELETED=0 AND ST.ID_TEKLIF_VEREN=@ID_TEKLIF_VEREN";
-            return dbConnection.Query<SP_TEKLIF>(query, new { ID_TEKLIF_VEREN = idKullanici });
+                @"SELECT
+    UU.URUN_ADI, STD.TEKLIF_DURUM_ADI, KK.AD_SOYAD AS TEKLIF_VEREN,
+    KK2.AD_SOYAD AS URUN_SAHIBI , ST.TEKLIF_FIYATI
+FROM SP_TEKLIF (NOLOCK) ST
+    INNER JOIN UR_URUN (NOLOCK) UU ON ST.ID_URUN=UU.ID_URUN
+    INNER JOIN SP_TEKLIF_DURUM (NOLOCK) STD ON ST.ID_TEKLIF_DURUM = STD.ID_TEKLIF_DURUM
+    INNER JOIN KU_KULLANICI (NOLOCK) KK ON ST.ID_TEKLIF_VEREN = KK.ID_KULLANICI
+    INNER JOIN KU_KULLANICI (NOLOCK) KK2 ON KK2.ID_KULLANICI = ST.ID_URUN_SAHIBI
+WHERE ST.DELETED=0 AND ST.ID_TEKLIF_VEREN=@ID_TEKLIF_VEREN
+            GROUP BY UU.URUN_ADI,STD.TEKLIF_DURUM_ADI,KK.AD_SOYAD,KK2.AD_SOYAD,ST.TEKLIF_FIYATI";
+            return dbConnection.Query<GetOfferResponse>(query, new { ID_TEKLIF_VEREN = idKullanici });
         }
     }
 

@@ -29,7 +29,7 @@ public class OfferRepository : BaseRepository, IDataRepository<SP_TEKLIF>
     {
     }
 
-    public void AddOffer(int idKullanici, int idUrun, int fiyat)
+    public void AddOffer(int idKullanici, int idUrun, int fiyat,int idUrunSahibi)
     {
         using (IDbConnection dbConnection = _connection)
         {

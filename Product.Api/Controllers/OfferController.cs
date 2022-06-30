@@ -55,7 +55,7 @@ public class OfferController : ControllerBase
     public ServicesResponse AddOffer(OfferRequest request)
     {
         OfferRepository offerRepository = new OfferRepository();
-        offerRepository.AddOffer(request.idKullanici, request.idUrun, request.fiyat);
+        offerRepository.AddOffer(request.idKullanici, request.idUrun, request.fiyat,request.idUrunSahibi);
         return new ServicesResponse
         {
             Message = "Teklif Verildi !",

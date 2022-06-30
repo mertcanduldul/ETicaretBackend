@@ -2,6 +2,7 @@ namespace Business.ServiceModel.Product;
 
 public class GetOfferResponse
 {
+    public int ID_OFFER { get; set; }
     public string URUN_ADI { get; set; }
     public string TEKLIF_DURUM_ADI { get; set; }
     public string TEKLIF_VEREN { get; set; }

@@ -84,7 +84,7 @@ public class OfferRepository : BaseRepository, IDataRepository<SP_TEKLIF>
         using (IDbConnection dbConnection = _connection)
         {
             string query =
-                @"SELECT
+                @"SELECT ST.ID_TEKLIF AS ID_OFFER,
     UU.URUN_ADI, STD.TEKLIF_DURUM_ADI, KK.AD_SOYAD AS TEKLIF_VEREN,
     KK2.AD_SOYAD AS URUN_SAHIBI , ST.TEKLIF_FIYATI
 FROM SP_TEKLIF (NOLOCK) ST
@@ -104,7 +104,7 @@ WHERE ST.DELETED=0 AND ST.ID_TEKLIF_VEREN=@ID_TEKLIF_VEREN
         {
             string query =
                 @"
-SELECT
+SELECT ST.ID_TEKLIF AS ID_OFFER,
     UU.URUN_ADI, STD.TEKLIF_DURUM_ADI, KK.AD_SOYAD AS TEKLIF_VEREN,
     KK2.AD_SOYAD AS URUN_SAHIBI , ST.TEKLIF_FIYATI
 FROM SP_TEKLIF (NOLOCK) ST

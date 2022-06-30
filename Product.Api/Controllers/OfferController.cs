@@ -89,7 +89,7 @@ public class OfferController : ControllerBase
 
     [HttpPost]
     [Route("AcceptOffer")]
-    public ServicesResponse AcceptOffer(int idOffer, int idKullanici)
+    public ServicesResponse AcceptOffer([FromBody] int idOffer, int idKullanici)
     {
         OfferRepository offerRepository = new OfferRepository();
         offerRepository.AcceptOffer(idOffer, idKullanici);
@@ -102,7 +102,7 @@ public class OfferController : ControllerBase
 
     [HttpPost]
     [Route("RejectOffer")]
-    public ServicesResponse RejectOffer(int idOffer)
+    public ServicesResponse RejectOffer([FromBody] int idOffer)
     {
         OfferRepository offerRepository = new OfferRepository();
         offerRepository.RejectOffer(idOffer);

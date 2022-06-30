@@ -52,10 +52,10 @@ public class OfferController : ControllerBase
 
     [HttpPost]
     [Route("AddOffer")]
-    public ServicesResponse AddOffer(int idKullanici, int idUrun, int fiyat)
+    public ServicesResponse AddOffer(OfferRequest request)
     {
         OfferRepository offerRepository = new OfferRepository();
-        offerRepository.AddOffer(idKullanici, idUrun, fiyat);
+        offerRepository.AddOffer(request.idKullanici, request.idUrun, request.fiyat);
         return new ServicesResponse
         {
             Message = "Teklif Verildi !",
